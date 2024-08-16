@@ -10,7 +10,7 @@ const ProtectedLayout: React.FC = () => {
 
     const navigation = useNavigate();
 
-    const [post, { isLoading }] = useLoginMutation();
+    const [post] = useLoginMutation();
 
     useEffect(() => {  
         handleReload();
