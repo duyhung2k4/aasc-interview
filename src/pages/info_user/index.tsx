@@ -9,11 +9,12 @@ import { EmployeeModel } from "@/models/employee";
 
 import classes from "./styles.module.css";
 import EmployeeDeltail from "./components/modal";
-
-
+import InfoUserFilter, { filterDefault, TypeFilter } from "./components/filter";
+import dayjs from "dayjs";
 
 const InfoUser: React.FC = () => {
     const [show, setShow] = useState<boolean>(false);
+    const [filter, setFilter] = useState<TypeFilter>(filterDefault);
     const [employeeSelect, setEmployeeSelect] = useState<EmployeeModel | null>(null);
 
     const {
@@ -23,10 +24,35 @@ const InfoUser: React.FC = () => {
     } = useGetAllQuery(Cookies.get(TOKEN_TYPE.ACCESS_TOKEN) || "");
 
     const employees = useMemo(() => {
-        return data?.data?.result || [];
-    }, [data]);
+        let list = data?.data?.result || [];
+
+        list = list.filter(e => {
+            const mergeDepartment = [...new Set([...e.UF_DEPARTMENT, ...filter.departments])];
+            return e.UF_DEPARTMENT.length === mergeDepartment.length;
+        } )
+
+        if(filter.name.length > 0) {
+            list = list.filter(e => `${e.LAST_NAME} ${e.NAME}`.toLowerCase().includes(filter.name.toLowerCase()));
+        }
+
+        if(filter.date_register_start) {
+            list = list.filter(e => {
+                const isTrue = dayjs(filter.date_register_start) <= dayjs(dayjs(e.DATE_REGISTER).format("YYYY-MM-DD"));
+                return isTrue;
+            })
+        }
+        if(filter.date_register_end) {
+            list = list.filter(e => {
+                const isTrue = dayjs(filter.date_register_end) >= dayjs(dayjs(e.DATE_REGISTER).format("YYYY-MM-DD"));
+                return isTrue;
+            })
+        }
+
+        return list;
+    }, [data, filter]);
 
     useEffect(() => {
+        setEmployeeSelect(null);
         refetch();
     }, []);
 
@@ -35,8 +61,10 @@ const InfoUser: React.FC = () => {
             value={{
                 employeeSelect,
                 show,
+                filter,
                 setEmployeeSelect,
                 setShow,
+                setFilter,
             }}
         >
             <div 
@@ -49,6 +77,7 @@ const InfoUser: React.FC = () => {
             >
                 <Container>
                     <p className={classes.title}>Danh sách người dùng</p>
+                    <InfoUserFilter/>
                     <div className={classes.option}>
                         <Button
                             variant={employeeSelect ? "success" : "secondary"}
@@ -62,7 +91,10 @@ const InfoUser: React.FC = () => {
                             style={{
                                 cursor: isFetching ? "not-allowed" : "pointer"
                             }}
-                            onClick={() => refetch()}
+                            onClick={() => {
+                                setEmployeeSelect(null);
+                                refetch();
+                            }}
                         >Làm mới</Button>
                     </div>
                 </Container>
@@ -97,13 +129,17 @@ export default InfoUser;
 export type TypeInfoUserContext = {
     employeeSelect: EmployeeModel | null
     show: boolean
+    filter: TypeFilter
     setEmployeeSelect: (value: EmployeeModel | null) => void
     setShow: (value: boolean) => void
+    setFilter: (value: TypeFilter) => void
 }
 
 export const InfoUserContext = createContext<TypeInfoUserContext>({
     employeeSelect: null,
     show: false,
+    filter: filterDefault,
     setEmployeeSelect: (_) => { },
     setShow: (_) => { },
+    setFilter: (_) => {},
 })

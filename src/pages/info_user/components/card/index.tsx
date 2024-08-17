@@ -19,7 +19,7 @@ const CardEmployee: React.FC<EmployeeModel> = (props) => {
                 <p className={classes.work_position}>
                     {props.WORK_POSITION || "Chưa phân chức vụ"}
                 </p>
-                <p className={classes.last_login}>Lần cuối đăng nhập: {props.LAST_LOGIN ? dayjs(new Date(props.LAST_LOGIN)).format("DD-MM-YYYY") : "Chưa đăng nhập"}</p>
+                <p className={classes.date_register}>Ngày đăng kí: {props.DATE_REGISTER ? dayjs(new Date(props.DATE_REGISTER)).format("DD-MM-YYYY") : "Chưa đăng kí"}</p>
             </div>
             <div className={props.IS_ONLINE === "Y" ?  classes.status_online : classes.status_offline}></div>
         </div>

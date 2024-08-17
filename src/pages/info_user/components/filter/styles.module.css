@@ -1,0 +1,43 @@
+.root {
+    border-radius: 16px;
+    padding: 16px;
+    background-color: #000;
+}
+
+.option {
+    margin-top: 16px;
+}
+
+.action {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    gap: 16px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.show {
+    cursor: pointer;
+}
+
+.show:hover {
+    text-decoration: underline;
+}
+
+.content {
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.active {
+    height: auto !important;
+}
+
+.un_active {
+    height: 0px !important;
+}
