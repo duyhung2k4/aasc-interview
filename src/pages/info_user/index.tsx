@@ -11,11 +11,15 @@ import classes from "./styles.module.css";
 import EmployeeDeltail from "./components/modal";
 import InfoUserFilter, { filterDefault, TypeFilter } from "./components/filter";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+import { ROUTER_APP } from "@/constants/router";
 
 const InfoUser: React.FC = () => {
     const [show, setShow] = useState<boolean>(false);
     const [filter, setFilter] = useState<TypeFilter>(filterDefault);
     const [employeeSelect, setEmployeeSelect] = useState<EmployeeModel | null>(null);
+
+    const navigation = useNavigate();
 
     const {
         data,
@@ -51,6 +55,12 @@ const InfoUser: React.FC = () => {
         return list;
     }, [data, filter]);
 
+    const logout = () => {
+        Cookies.remove(TOKEN_TYPE.ACCESS_TOKEN);
+        Cookies.remove(TOKEN_TYPE.APP_ID);
+        navigation(ROUTER_APP.LOGIN.href);
+    }
+
     useEffect(() => {
         setEmployeeSelect(null);
         refetch();
@@ -79,6 +89,7 @@ const InfoUser: React.FC = () => {
                     <p className={classes.title}>Danh sách người dùng</p>
                     <InfoUserFilter/>
                     <div className={classes.option}>
+                        <Button variant="danger" onClick={logout}>Đăng xuất</Button>
                         <Button
                             variant={employeeSelect ? "success" : "secondary"}
                             disabled={!employeeSelect}
